@@ -11,34 +11,29 @@ from grid_definition import define_grid
 def main():
     # Search for minimum score
     scores = {}
-    score_tags = {}
 
     for k, method, delta_window, daysahead, tag in tqdm(define_grid()):
-        if daysahead not in scores:
-            scores[daysahead] = []
-            score_tags[daysahead] = []
+        if tag not in scores:
+            scores[tag] = 0
 
-        score = get_score(0, tag, daysahead)
-        scores[daysahead].append(score)
-        score_tags[daysahead].append(tag)
+        scores[tag] +=  get_score(0, tag, daysahead)
 
-    for i in range(len(scores[1])):
-        print(f"Rank {i}-------------------")
-        df_rows = []
+    I = np.argsort(list(scores.values()))
+    sorted_tags = np.array(list(scores.keys()))[I]
+    sorted_scores = np.array(list(scores.values()))[I]
+    df_rows = []
 
-        for daysahead in range(MIN_DAYSAHEAD, MAX_DAYSAHEAD + 1):
-            I = np.argsort(scores[daysahead])
-            df_rows.append(
-                [
-                    daysahead,
-                    scores[daysahead][I[i]],
-                    score_tags[daysahead][I[i]],
-                ]
-            )
+    for i, (tag, score) in enumerate(zip(sorted_tags, sorted_scores)):
+        df_rows.append(
+            [
+                i,
+                score,
+                tag
+            ]
+        )
 
-        df = pd.DataFrame(df_rows, columns=["Days Ahead", "Score", "Tag"])
-
-        print(df.to_string())
+    df = pd.DataFrame(df_rows, columns=["Rank", "Score", "Tag"])
+    print(df.to_string(index=0))
 
 
 def get_score(real, tag, daysahead):
@@ -51,7 +46,7 @@ def get_score(real, tag, daysahead):
     score = 0
 
     percentiles_pred = np.array(df["ObservedPercentile"].tolist() + [100])
-    score += np.trapz(np.abs(percentiles_true - percentiles_pred), percentiles_true)
+    score += np.trapezoid(np.abs(percentiles_true - percentiles_pred), percentiles_true)
 
     return score
 
