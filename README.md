@@ -7,6 +7,8 @@ The methodology used here builds on [k-NN methods](https://en.wikipedia.org/wiki
 
 The solar wind predictions from WSA for use with this code can be downloaded from Zenodo. The full WSA runs (including FITS output) are [available on HuggingFace](https://huggingface.co/datasets/ddasilva/probabilistic-solar-wind).
 
+<img src="error_bar_illustration.png" width="50%">
+
 ## Contact
 The author can be reached at [daniel.e.dasilva@nasa.gov](daniel.e.dasilva@nasa.gov) or [mail@danieldasilva.org](mail@danieldasilva.org).
 
